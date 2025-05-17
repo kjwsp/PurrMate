@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PurrMate Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Urbanist', sans-serif;
+        }
+
+        body {
+            background-color: #f8f5f1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f5f1;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .wave {
+            height: 60px;
+            background-color: white;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            margin-bottom: 0;
+        }
+
+        .content {
+            flex: 1;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .status {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .status-label {
+            color: #333;
+        }
+
+        .status-value {
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .heart-rate {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+
+        .circle-1 {
+            width: 140%;
+            height: 140%;
+            border-color: rgba(255, 129, 92, 0.2);
+        }
+
+        .circle-2 {
+            width: 105%;
+            height: 105%;
+            border-color: rgba(255, 129, 92, 0.4);
+        }
+
+        .circle-3 {
+            width: 70%;
+            height: 70%;
+            border-color: rgba(255, 129, 92, 0.8);
+        }
+
+        .bpm-container {
+            text-align: center;
+        }
+
+        .bpm-value {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #222;
+            line-height: 1;
+        }
+
+        .bpm-label {
+            font-size: 1.2rem;
+            color: #ff815c;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .navbar {
+            background-color: #222;
+            padding: 15px 20px;
+            border-radius: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+            color: white;
+        }
+
+        .nav-item {
+            padding: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .nav-item.home {
+            color: #ff815c;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 2rem;
+            }
+
+            .heart-rate {
+                width: 220px;
+                height: 220px;
+            }
+
+            .bpm-value {
+                font-size: 4rem;
+            }
+
+            .status {
+                font-size: 1rem;
+            }
+
+            .navbar {
+                padding: 12px 15px;
+            }
+        }
+
+        /* Stress indicator styles */
+        .stressed .circle-1,
+        .stressed .circle-2,
+        .stressed .circle-3 {
+            border-color: rgba(255, 77, 77, 0.8);
+        }
+
+        .stressed .bpm-label {
+            color: #ff4d4d;
+        }
+
+        .stressed .status-value {
+            color: #ff4d4d;
+        }
+
+        .not-stressed .status-value {
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="assets/Purrmate.png" alt="PurrMate Logo" class="logo" style="max-width: 300px; height: auto;" />
+    </div>
+    <div class="wave"></div>
+    <div class="content">
+        <div class="status">
+            <span class="status-label">Indicated:</span>
+            <span class="status-value" id="stress-status">Not Stressed</span>
+        </div>
+        <div class="heart-rate" id="heart-rate-container">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+            <div class="bpm-container">
+                <div class="bpm-value" id="bpm-value">125</div>
+                <div class="bpm-label">BPM</div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar">
+        <div class="nav-item home">
+            <i class="fa-solid fa-house"></i>
+        </div>
+        <div class="nav-item refresh" id="refresh-btn">
+            <i class="fa-solid fa-arrows-rotate"></i>
+        </div>
+        <div class="nav-item profile">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </div>
+
+    <script>
+        // Simulate IoT data reception
+        function simulateIoTData() {
+            // In a real application, this would be replaced with actual IoT data fetching
+            return {
+                heartRate: Math.floor(Math.random() * (160 - 60) + 60), // Random BPM between 60-160
+                isStressed: Math.random() > 0.5 // Random stress status
+            };
+        }
+
+        // Update the UI based on received data
+        function updateHeartRateUI(data) {
+            const bpmValue = document.getElementById('bpm-value');
+            const stressStatus = document.getElementById('stress-status');
+            const heartRateContainer = document.getElementById('heart-rate-container');
+            
+            // Update BPM value
+            bpmValue.textContent = data.heartRate;
+            
+            // Update stress status
+            if (data.isStressed) {
+                stressStatus.textContent = 'Stressed';
+                heartRateContainer.classList.add('stressed');
+                heartRateContainer.classList.remove('not-stressed');
+            } else {
+                stressStatus.textContent = 'Not Stressed';
+                heartRateContainer.classList.add('not-stressed');
+                heartRateContainer.classList.remove('stressed');
+            }
+        }
+
+        // Initial data update
+        updateHeartRateUI({
+            heartRate: 125,
+            isStressed: false
+        });
+
+        // Simulate real-time updates
+        document.getElementById('refresh-btn').addEventListener('click', function() {
+            const newData = simulateIoTData();
+            updateHeartRateUI(newData);
+        });
+
+        // In a real application, you might use WebSockets or Server-Sent Events for real-time updates
+        // Example WebSocket implementation (commented out):
+        /*
+        const socket = new WebSocket('wss://your-iot-websocket-server.com');
+        
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            updateHeartRateUI(data);
+        };
+        
+        socket.onerror = function(error) {
+            console.error('WebSocket Error:', error);
+        };
+        */
+    </script>
+</body>
+</html>

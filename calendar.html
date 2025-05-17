@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PurrMate - Mood Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Urbanist', sans-serif;
+        }
+
+        body {
+            background-color: #f8f5f1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f5f1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .wave {
+            height: 60px;
+            background-color: white;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            margin-bottom: 0;
+        }
+
+        .content {
+            flex: 1;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .calendar-container {
+            background-color: #f9f5f0;
+            border-radius: 20px;
+            padding: 15px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 15px;
+        }
+
+        .month-year {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #333;
+            padding: 5px 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .weekday {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .day-number {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .mood {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .mood.happy {
+            background-color: #ff815c;
+        }
+
+        .mood.sad {
+            background-color: #4a90e2;
+        }
+
+        .navbar {
+            background-color: #222;
+            padding: 15px 20px;
+            border-radius: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+            color: white;
+        }
+
+        .nav-item {
+            padding: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #ff815c;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .calendar-container {
+                padding: 10px;
+            }
+
+            .month-year {
+                font-size: 1.2rem;
+            }
+
+            .calendar-grid {
+                gap: 5px;
+            }
+
+            .mood {
+                width: 25px;
+                height: 25px;
+                font-size: 0.8rem;
+            }
+
+            .day-number {
+                font-size: 0.9rem;
+            }
+
+            .navbar {
+                padding: 12px 15px;
+            }
+        }
+
+        /* Today's highlight */
+        .day.today .day-number {
+            font-weight: 700;
+            color: #ff815c;
+        }
+
+        /* Empty days */
+        .day.empty {
+            visibility: hidden;
+        }
+
+        /* Stress indicator form */
+        .stress-form {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f5f0;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 1rem;
+        }
+
+        .form-button {
+            background-color: #ff815c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .form-button:hover {
+            background-color: #e57050;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="assets/Calendar.png" alt="Calendar" style="max-width: 150px; height: auto;" />
+    </div>
+    <div class="wave"></div>
+    <div class="content">
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="nav-btn" id="prev-month"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="month-year" id="month-year">May 2025</div>
+                <button class="nav-btn" id="next-month"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <div class="calendar-grid" id="weekdays">
+                <div class="weekday">Mon</div>
+                <div class="weekday">Tue</div>
+                <div class="weekday">Wed</div>
+                <div class="weekday">Thu</div>
+                <div class="weekday">Fri</div>
+                <div class="weekday">Sat</div>
+                <div class="weekday">Sun</div>
+            </div>
+            <div class="calendar-grid" id="calendar-days">
+                <!-- Calendar days will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="stress-form">
+            <div class="form-title">Update Today's Mood</div>
+            <div class="form-group">
+                <label class="form-label" for="stress-status">Are you stressed today?</label>
+                <select class="form-select" id="stress-status">
+                    <option value="false">Not Stressed</option>
+                    <option value="true">Stressed</option>
+                </select>
+            </div>
+            <button class="form-button" id="update-mood">Update Mood</button>
+        </div>
+    </div>
+    <div class="navbar">
+        <div class="nav-item">
+            <i class="fa-solid fa-house"></i>
+        </div>
+        <div class="nav-item active">
+            <i class="fa-solid fa-calendar-days"></i>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </div>
+
+    <script>
+        // Store mood data
+        let moodData = {};
+        
+        // Initialize with some random mood data for May 2025
+        function initializeMoodData() {
+            const daysInMonth = new Date(2025, 4, 0).getDate();
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                // Generate random mood (true = stressed, false = not stressed)
+                moodData[`2025-05-${i}`] = Math.random() > 0.5;
+            }         
+            // Save to localStorage
+            localStorage.setItem('purrMateMoodData', JSON.stringify(moodData));
+        }
+        
+        // Load mood data from localStorage or initialize if not exists
+        function loadMoodData() {
+            const storedData = localStorage.getItem('purrMateMoodData');
+            if (storedData) {
+                moodData = JSON.parse(storedData);
+            } else {
+                initializeMoodData();
+            }
+        }
+        
+        // Save mood data to localStorage
+        function saveMoodData() {
+            localStorage.setItem('purrMateMoodData', JSON.stringify(moodData));
+        }
+        
+        // Current displayed date
+        let currentDate = new Date(2025, 4, 1); // May 2025
+        
+        // Generate calendar for the current month
+        function generateCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Update month-year display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('month-year').textContent = `${monthNames[month]} ${year}`;
+            
+            // Get first day of month and total days in month
+            const firstDay = new Date(year, month, 1).getDay() || 7; // Convert Sunday (0) to 7 for easier calculation
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Clear previous calendar
+            const calendarDays = document.getElementById('calendar-days');
+            calendarDays.innerHTML = '';
+            
+            // Add empty cells for days before the first day of month
+            for (let i = 1; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day empty';
+                calendarDays.appendChild(emptyDay);
+            }
+            
+            // Add days of the month
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                
+                // Check if it's today
+                if (isCurrentMonth && today.getDate() === i) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Create mood indicator
+                const moodElement = document.createElement('div');
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                
+                // Check if we have mood data for this date
+                const isStressed = moodData[dateKey];
+                if (isStressed === true) {
+                    moodElement.className = 'mood sad';
+                    moodElement.innerHTML = '😢';
+                } else {
+                    moodElement.className = 'mood happy';
+                    moodElement.innerHTML = '😊';
+                }
+                
+                // Create day number
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = i;
+                
+                // Add elements to day
+                dayElement.appendChild(moodElement);
+                dayElement.appendChild(dayNumber);
+                calendarDays.appendChild(dayElement);
+            }
+        }
+        
+        // Navigate to previous month
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        }
+        
+        // Navigate to next month
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        }
+        
+        // Update today's mood
+        function updateTodayMood() {
+            const isStressed = document.getElementById('stress-status').value === 'true';
+            const today = new Date();
+            const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
+            // Update mood data
+            moodData[dateKey] = isStressed;
+            saveMoodData();
+            
+            // Regenerate calendar if we're viewing the current month
+            if (today.getFullYear() === currentDate.getFullYear() && today.getMonth() === currentDate.getMonth()) {
+                generateCalendar();
+            }
+            
+            alert(`Mood updated for today: ${isStressed ? 'Stressed' : 'Not Stressed'}`);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load mood data
+            loadMoodData();
+            
+            // Generate initial calendar
+            generateCalendar();
+            
+            // Add event listeners
+            document.getElementById('prev-month').addEventListener('click', previousMonth);
+            document.getElementById('next-month').addEventListener('click', nextMonth);
+            document.getElementById('update-mood').addEventListener('click', updateTodayMood);
+        });
+    </script>
+</body>
+</html>
