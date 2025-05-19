@@ -182,24 +182,27 @@
         </div>
         <div class="form-wrapper">
             <div class="wave"></div>
-            <form>
-                <div class="form-container" id="signup-form">
+            <form id="signup-form">
+                <div class="form-container">
+                    <div id="verification-notification" style="display:none; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                        A verification email has been sent. Please check your inbox.
+                    </div>
                     <div class="form-group">
-                        <label for="name"  id="signup-name">Name</label>
+                        <label for="signup-name">Name</label>
                         <div class="input-group">
                             <img src="assets/usericon.png" alt="Name Icon" class="input-icon" />
-                            <input type="name" id="signup-name" placeholder="Enter your name.">
+                            <input type="text" id="signup-name" placeholder="Enter your name.">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="email" id="signup-email">Email Address</label>
+                        <label for="signup-email">Email Address</label>
                         <div class="input-group">
                             <img src="assets/emailLogo.png" alt="Email Icon" class="input-icon" />
                             <input type="email" id="signup-email" placeholder="gigimemados@gmail.com">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="signup-password">Password</label>
                         <div class="input-group">
                             <img src="assets/lockIcon.png" alt="Lock Icon" class="input-icon" />
                             <input type="password" id="signup-password" placeholder="Enter your password.">
@@ -216,6 +219,7 @@
             </form>
         </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="firebase-init.js"></script>
 
 </body>
