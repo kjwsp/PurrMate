@@ -200,20 +200,20 @@
             <div class="circle circle-3"></div>
             <div class="bpm-container">
                 <div class="bpm-value" id="bpm-value">125</div>
-                <div class="bpm-label">BPM</div>
+                <div class="bpm-label">HRV</div>
             </div>
         </div>
     </div>
     <div class="navbar">
-        <div class="nav-item home">
+        <a href="home.html" class="nav-item home" style="color: white;">
             <i class="fa-solid fa-house"></i>
-        </div>
+        </a>
         <div class="nav-item refresh" id="refresh-btn">
             <i class="fa-solid fa-arrows-rotate"></i>
         </div>
-        <div class="nav-item profile">
+        <a href="profile.html" class="nav-item profile">
             <i class="fa-solid fa-user"></i>
-        </div>
+        </a>
     </div>
 
     <script>
@@ -258,21 +258,6 @@
             const newData = simulateIoTData();
             updateHeartRateUI(newData);
         });
-
-        // In a real application, you might use WebSockets or Server-Sent Events for real-time updates
-        // Example WebSocket implementation (commented out):
-        /*
-        const socket = new WebSocket('wss://your-iot-websocket-server.com');
-        
-        socket.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            updateHeartRateUI(data);
-        };
-        
-        socket.onerror = function(error) {
-            console.error('WebSocket Error:', error);
-        };
-        */
     </script>
 </body>
 </html>

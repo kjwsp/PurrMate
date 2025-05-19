@@ -139,3 +139,49 @@ function isValidEmail(email) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(String(email).toLowerCase());
 }
+
+// Listen for auth state changes and update profile page
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log("User logged in with UID:", user.uid);
+    if (window.location.pathname.includes("profile.html")) {
+      const userRef = doc(firestore, "users", user.uid);
+      try {
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          console.log("User data found:", userData);
+          document.getElementById("user-name").textContent = userData.name || "Name not available";
+          document.getElementById("user-email").textContent = userData.email || "Email not available";
+          document.getElementById("profile-container").style.display = "flex";
+          document.getElementById("auth-container").style.display = "none";
+          document.getElementById("loading-container").style.display = "none";
+        } else {
+          console.log("User document not found.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    }
+  } else {
+    console.log("User not logged in");
+    if (window.location.pathname.includes("profile.html")) {
+      document.getElementById("profile-container").style.display = "none";
+      document.getElementById("auth-container").style.display = "flex";
+      document.getElementById("loading-container").style.display = "none";
+    }
+  }
+});
+
+// Logout button handler on profile page
+const logoutBtn = document.getElementById("logout-btn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      window.location.href = "index.html";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  });
+}

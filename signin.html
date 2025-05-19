@@ -210,20 +210,6 @@
         </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Toggle password visibility
-        document.querySelectorAll('.toggle-password').forEach(icon => {
-            icon.addEventListener('click', function() {
-                const input = this.previousElementSibling;
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    this.classList.replace('fa-eye-slash', 'fa-eye');
-                } else {
-                    input.type = 'password';
-                    this.classList.replace('fa-eye', 'fa-eye-slash');
-                }
-            });
-        });
-    </script>
+    <script type="module" src="firebase-init.js"></script>
 </body>
 </html>
