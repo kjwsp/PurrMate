@@ -86,7 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const user = userCredential.user;
           await updateProfile(user, { displayName: name });
           const timestampSeconds = Math.floor(Date.now() / 1000);
-          await set(ref(database, `users/${name}`), {
+          await set(ref(database, 'users/' + user.uid), {
+            name: name,
             email: email,
             hrv: {
               [timestampSeconds]: {
@@ -148,26 +149,28 @@ function isValidEmail(email) {
 }
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user || !window.location.pathname.includes("profile.html")) return;
-
-  const key = user.displayName;
-  console.log("Looking up profile under users/" + key);
-
-  try {
-    const snap = await get(ref(database, "users/" + key));
-    if (!snap.exists()) {
-      console.warn("No profile for", key);
-      return;
-    }
-    const { name, email } = snap.val();
-    document.getElementById("user-name").textContent  = name;
-    document.getElementById("user-email").textContent = email;
-    document.getElementById("profile-container").style.display = "flex";
-    document.getElementById("auth-container").style.display    = "none";
-  } catch (e) {
-    console.error("Error fetching profile:", e);
-  } finally {
-    document.getElementById("loading-container").style.display = "none";
+  if (user && window.location.pathname.includes("profile.html")) {
+    const userRef = ref(database, "users/" + user.uid);
+    console.log("Reading database at:", "users/" + user.uid);
+  
+    get(userRef)
+      .then((snap) => {
+        console.log("Got snapshot:", snap.val());
+        if (!snap.exists()) {
+          console.warn("No data under that node!");
+          return;
+        }
+        const { name, email } = snap.val();
+        document.getElementById("user-name").textContent  = name;
+        document.getElementById("user-email").textContent = email;
+  
+        document.getElementById("profile-container").style.display = "flex";
+        document.getElementById("auth-container").style.display    = "none";
+      })
+      .catch((err) => console.error(err))
+      .finally(() => {
+        document.getElementById("loading-container").style.display = "none";
+      });
   }
 });
 
