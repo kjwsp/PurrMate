@@ -5,15 +5,15 @@
   "display": "standalone",
   "background_color": "#f8f5f1",
   "theme_color": "#222222",
-  "description": "PurrMate - Your Cat Companion App",
+  "description": "PurrMate",
   "icons": [
     {
-      "src": "assets/PurrMate.png",
+      "src": "assets/PurrmateLogo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "assets/PurrMate.png",
+      "src": "assets/PurrmateLogo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
