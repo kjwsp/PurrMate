@@ -140,7 +140,6 @@
             color: #ff815c;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 480px) {
             .logo {
                 font-size: 2rem;
@@ -205,59 +204,15 @@
         </div>
     </div>
     <div class="navbar">
-        <a href="home.html" class="nav-item home" style="color: white;">
+        <a href="home.html" class="nav-item home" style="color: #ff6f3c;">
             <i class="fa-solid fa-house"></i>
         </a>
-        <div class="nav-item refresh" id="refresh-btn">
-            <i class="fa-solid fa-arrows-rotate"></i>
-        </div>
-        <a href="profile.html" class="nav-item profile">
+        <a href="calendar.html" class="nav-item" style="color: white;">
+            <i class="fa-solid fa-calendar-days"></i>
+        </a>
+        <a href="profile.html" class="nav-item profile" style="color: white;">
             <i class="fa-solid fa-user"></i>
         </a>
     </div>
-
-    <script>
-        // Simulate IoT data reception
-        function simulateIoTData() {
-            // In a real application, this would be replaced with actual IoT data fetching
-            return {
-                heartRate: Math.floor(Math.random() * (160 - 60) + 60), // Random BPM between 60-160
-                isStressed: Math.random() > 0.5 // Random stress status
-            };
-        }
-
-        // Update the UI based on received data
-        function updateHeartRateUI(data) {
-            const bpmValue = document.getElementById('bpm-value');
-            const stressStatus = document.getElementById('stress-status');
-            const heartRateContainer = document.getElementById('heart-rate-container');
-            
-            // Update BPM value
-            bpmValue.textContent = data.heartRate;
-            
-            // Update stress status
-            if (data.isStressed) {
-                stressStatus.textContent = 'Stressed';
-                heartRateContainer.classList.add('stressed');
-                heartRateContainer.classList.remove('not-stressed');
-            } else {
-                stressStatus.textContent = 'Not Stressed';
-                heartRateContainer.classList.add('not-stressed');
-                heartRateContainer.classList.remove('stressed');
-            }
-        }
-
-        // Initial data update
-        updateHeartRateUI({
-            heartRate: 125,
-            isStressed: false
-        });
-
-        // Simulate real-time updates
-        document.getElementById('refresh-btn').addEventListener('click', function() {
-            const newData = simulateIoTData();
-            updateHeartRateUI(newData);
-        });
-    </script>
 </body>
 </html>
