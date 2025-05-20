@@ -49,6 +49,7 @@
             padding: 20px;
             position: relative;
         }
+
         @media (max-width: 480px) {
             .status {
                 position: static !important;
@@ -158,6 +159,7 @@
         .nav-item.home {
             color: #ff815c;
         }
+
         @media (max-width: 768px) {
             .logo {
                 font-size: 2rem;
@@ -218,14 +220,14 @@
     <div class="content">
         <div class="status" id="stress-status-container">
             <span class="status-label">Indicated:</span>
-            <span class="status-value" id="stress-status">Not Stressed</span>
+            <span class="status-value" id="stress-status">-</span>
         </div>
         <div class="heart-rate" id="heart-rate-container">
             <div class="circle circle-1"></div>
             <div class="circle circle-2"></div>
             <div class="circle circle-3"></div>
             <div class="bpm-container">
-                <div class="bpm-value" id="bpm-value">125</div>
+                <div class="bpm-value" id="bpm-value">--</div>
                 <div class="bpm-label">HRV</div>
             </div>
         </div>
@@ -241,5 +243,80 @@
             <i class="fa-solid fa-user"></i>
         </a>
     </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwojaE5L4WuwtHRJ_xwaycuSmkGgAyZBI",
+            authDomain: "purrmate-stress-manager.firebaseapp.com",
+            databaseURL: "https://purrmate-stress-manager-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "purrmate-stress-manager",
+            storageBucket: "purrmate-stress-manager.firebasestorage.app",
+            messagingSenderId: "942490809737",
+            appId: "1:942490809737:web:298894b7efc71538741d58",
+            measurementId: "G-P6EGG0N18Z"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Function to fetch HRV data from Firebase
+        async function fetchHRVData(userId) {
+            const userRef = ref(database, `users/${userId}/hrv`);
+            try {
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const hrvData = snapshot.val();
+                    console.log("HRV Data:", hrvData); // Log the fetched HRV data
+                    // Get the latest timestamp
+                    const latestTimestamp = Math.max(...Object.keys(hrvData));
+                    const latestHRV = hrvData[latestTimestamp].rmssd;
+                    const latestState = hrvData[latestTimestamp].state; // Fetch the state value
+                    console.log("Latest HRV:", latestHRV); // Log the latest HRV value
+                    console.log("Latest State:", latestState); // Log the latest state value
+                    // Check if latestHRV is "--" and handle accordingly
+                    if (latestHRV === "--") {
+                        document.getElementById('bpm-value').textContent = "--"; // Display "--" if no HRV data
+                    } else {
+                        document.getElementById('bpm-value').textContent = Math.floor(latestHRV); // Use Math.floor for numeric values
+                    }
+                    document.getElementById('stress-status').textContent = latestState.charAt(0).toUpperCase() + latestState.slice(1); // Capitalize the first letter
+                } else {
+                    console.warn("No HRV data found for this user.");
+                }
+            } catch (error) {
+                console.error("Error fetching HRV data:", error);
+            }
+        }
+
+        // Function to start fetching HRV data every minute
+        function startFetchingHRV() {
+            const user = auth.currentUser ; // Get the current user
+            if (user) {
+                console.log("Current User ID:", user.uid); // Log the user ID
+                const userId = user.uid; // Get user ID
+                fetchHRVData(userId); // Initial fetch
+                setInterval(() => fetchHRVData(userId), 60000); // Fetch every minute
+            } else {
+                console.warn("No user is currently logged in.");
+            }
+        }
+
+        // Check authentication state and start fetching HRV data
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                startFetchingHRV(); // Start fetching HRV data if user is logged in
+            } else {
+                console.warn("No user is currently logged in.");
+            }
+        });
+    </script>
 </body>
 </html>
