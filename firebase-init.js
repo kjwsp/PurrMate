@@ -93,10 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
           await sendEmailVerification(user);
 
-          const verificationNotification = document.getElementById('verification-notification');
-          if (verificationNotification) {
-            verificationNotification.style.display = 'block';
-          }
+          Swal.fire({
+            icon: 'success',
+            title: 'Sign Up Successful!',
+            text: `A verification email has been sent to ${email}. Please check your inbox.`,
+          }).then(() => {
+            window.location.href = 'signin.html';
+          });
 
           document.getElementById('signup-form').style.display = 'none';
         })
