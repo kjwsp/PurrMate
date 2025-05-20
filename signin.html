@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PurrMate Sign In</title>
+    <title>PurrMate - Sign In</title>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist&display=swap" rel="stylesheet" />
     <style>
         * {
@@ -208,8 +208,23 @@
                 </div>
             </form>
         </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
     <script type="module" src="firebase-init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.classList.replace('fa-eye-slash', 'fa-eye');
+                } else {
+                    input.type = 'password';
+                    this.classList.replace('fa-eye', 'fa-eye-slash');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

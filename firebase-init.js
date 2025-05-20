@@ -1,23 +1,24 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getDatabase, ref, set, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+import { updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDudXZn9HsOZTWlx0QyigqGntOTD6XLEJ8",
-  authDomain: "purrmate-dff18.firebaseapp.com",
-  projectId: "purrmate-dff18",
-  storageBucket: "purrmate-dff18.firebasestorage.app",
-  messagingSenderId: "813321716155",
-  appId: "1:813321716155:web:6b0e84d88388795a46049e",
-  measurementId: "G-CTTM7LQN5M"
+  apiKey: "AIzaSyAwojaE5L4WuwtHRJ_xwaycuSmkGgAyZBI",
+  authDomain: "purrmate-stress-manager.firebaseapp.com",
+  databaseURL: "https://purrmate-stress-manager-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "purrmate-stress-manager",
+  storageBucket: "purrmate-stress-manager.firebasestorage.app",
+  messagingSenderId: "942490809737",
+  appId: "1:942490809737:web:298894b7efc71538741d58",
+  measurementId: "G-P6EGG0N18Z"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
-const firestore = getFirestore(app);
+const database = getDatabase(app);
 
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById('login-form');
@@ -83,12 +84,16 @@ document.addEventListener("DOMContentLoaded", () => {
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           const user = userCredential.user;
-
-          await setDoc(doc(firestore, 'users', user.uid), {
-            uid: user.uid,
-            name: name,
+          await updateProfile(user, { displayName: name });
+          const timestampSeconds = Math.floor(Date.now() / 1000);
+          await set(ref(database, `users/${name}`), {
             email: email,
-            HRV: 0
+            hrv: {
+              [timestampSeconds]: {
+                rmssd: 0,
+                state: "stressed"
+              }
+            }
           });
 
           await sendEmailVerification(user);
@@ -142,40 +147,30 @@ function isValidEmail(email) {
   return re.test(String(email).toLowerCase());
 }
 
-// Listen for auth state changes and update profile page
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    console.log("User logged in with UID:", user.uid);
-    if (window.location.pathname.includes("profile.html")) {
-      const userRef = doc(firestore, "users", user.uid);
-      try {
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-          console.log("User data found:", userData);
-          document.getElementById("user-name").textContent = userData.name || "Name not available";
-          document.getElementById("user-email").textContent = userData.email || "Email not available";
-          document.getElementById("profile-container").style.display = "flex";
-          document.getElementById("auth-container").style.display = "none";
-          document.getElementById("loading-container").style.display = "none";
-        } else {
-          console.log("User document not found.");
-        }
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
+  if (!user || !window.location.pathname.includes("profile.html")) return;
+
+  const key = user.displayName;
+  console.log("Looking up profile under users/" + key);
+
+  try {
+    const snap = await get(ref(database, "users/" + key));
+    if (!snap.exists()) {
+      console.warn("No profile for", key);
+      return;
     }
-  } else {
-    console.log("User not logged in");
-    if (window.location.pathname.includes("profile.html")) {
-      document.getElementById("profile-container").style.display = "none";
-      document.getElementById("auth-container").style.display = "flex";
-      document.getElementById("loading-container").style.display = "none";
-    }
+    const { name, email } = snap.val();
+    document.getElementById("user-name").textContent  = name;
+    document.getElementById("user-email").textContent = email;
+    document.getElementById("profile-container").style.display = "flex";
+    document.getElementById("auth-container").style.display    = "none";
+  } catch (e) {
+    console.error("Error fetching profile:", e);
+  } finally {
+    document.getElementById("loading-container").style.display = "none";
   }
 });
 
-// Logout button handler on profile page
 const logoutBtn = document.getElementById("logout-btn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {

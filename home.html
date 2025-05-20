@@ -49,6 +49,25 @@
             padding: 20px;
             position: relative;
         }
+        @media (max-width: 480px) {
+            .status {
+                position: static !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                margin-top: auto;
+                margin-bottom: 20px;
+                text-align: center;
+                width: 100%;
+            }
+            #stress-status-container {
+                position: absolute !important;
+                bottom: 20px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: auto !important;
+            }
+        }
 
         .status {
             position: absolute;
@@ -139,8 +158,7 @@
         .nav-item.home {
             color: #ff815c;
         }
-
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
             .logo {
                 font-size: 2rem;
             }
@@ -160,6 +178,15 @@
 
             .navbar {
                 padding: 12px 15px;
+            }
+
+            /* Move Not Stressed indicator to bottom */
+            #stress-status-container {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                top: auto !important;
             }
         }
 
@@ -189,7 +216,7 @@
     </div>
     <div class="wave"></div>
     <div class="content">
-        <div class="status">
+        <div class="status" id="stress-status-container">
             <span class="status-label">Indicated:</span>
             <span class="status-value" id="stress-status">Not Stressed</span>
         </div>
