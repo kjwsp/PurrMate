@@ -88,7 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
             uid: user.uid,
             name: name,
             email: email,
-            level: 0,
             timestamp: serverTimestamp()
           });
 
