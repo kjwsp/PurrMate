@@ -85,10 +85,12 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(async (userCredential) => {
           const user = userCredential.user;
           await updateProfile(user, { displayName: name });
-          const timestampSeconds = Math.floor(Date.now() / 1000);
+          const timestampMilliSeconds = Date.now();
+          const timestampSeconds = Math.floor(timestampMilliSeconds / 1000);
           await set(ref(database, 'users/' + user.uid), {
             name: name,
             email: email,
+            tempTime: timestampMilliSeconds,
             hrv: {
               [timestampSeconds]: {
                 rmssd: 0,
