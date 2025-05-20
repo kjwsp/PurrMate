@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
             uid: user.uid,
             name: name,
             email: email,
-            timestamp: serverTimestamp()
+            HRV: 0
           });
 
           await sendEmailVerification(user);
