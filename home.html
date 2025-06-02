@@ -303,7 +303,7 @@
                 console.log("Current User ID:", user.uid); // Log the user ID
                 const userId = user.uid; // Get user ID
                 fetchHRVData(userId); // Initial fetch
-                setInterval(() => fetchHRVData(userId), 30000); // Fetch 30 seconds
+                setInterval(() => fetchHRVData(userId), 1000); // Fetch 1 seconds
             } else {
                 console.warn("No user is currently logged in.");
             }
